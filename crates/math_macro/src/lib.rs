@@ -7,15 +7,15 @@ use syn;
 #[allow(unused)]
 #[proc_macro_attribute]
 pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
-    println!("args: {:?}", args);
+    // println!("args: {:?}", args);
     let mut i = input.clone();
 
     let ipt = syn::parse_macro_input!(input as syn::DeriveInput);
     let name = &ipt.ident;
     let name_str = name.to_string();
 
-    dbg!(&name);
-    dbg!(args.clone().into_iter().next().unwrap());
+    // dbg!(&name);
+    // dbg!(args.clone().into_iter().next().unwrap());
 
     let mut def_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
     let mut new_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
