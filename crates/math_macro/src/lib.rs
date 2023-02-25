@@ -85,7 +85,7 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
         type Output = Self;
         fn sub(self, rhs: Self) -> Self::Output {
             #name {
-                #add_token
+                #sub_token
             }
         }
     }
@@ -99,7 +99,7 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
         type Output = Self;
         fn mul(self, rhs: Self) -> Self::Output {
             #name {
-                #add_token
+                #mul_token
             }
         }
     }
