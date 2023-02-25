@@ -1,0 +1,14 @@
+[package]
+name = "my-render"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+core-foundation = "0.9.3"
+winit = "0.28.1"
+math-macro = { path = "./crates/math_macro" }
+image = "0.24.5"
+wavefront = "0.2.3"
+quote = {version="1.0"}
