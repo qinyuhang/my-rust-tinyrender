@@ -18,6 +18,7 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
     // dbg!(args.clone().into_iter().next().unwrap());
 
     let mut def_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
+    let mut fn_param_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
     let mut new_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
     let mut add_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
     let mut sub_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
@@ -28,7 +29,8 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
         let m = item.to_string();
         if m != "," {
             let m = proc_macro2::Ident::new(&m, proc_macro2::Span::from(item.span()));
-            def_token.extend(quote!( #m: T, ));
+            def_token.extend(quote!( pub #m: T, ));
+            fn_param_token.extend(quote!( #m: T, ));
             new_token.extend(quote!( #m, ));
             add_token.extend(quote!( #m: self.#m + rhs.#m, ));
             sub_token.extend(quote!( #m: self.#m - rhs.#m, ));
@@ -43,8 +45,11 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
     println!("z: {:?} {}", format_token.to_string(), format_placeholder);
 
     TokenStream::from(quote!(
+    #[derive(PartialEq, Clone, Copy, Debug)]
     pub struct #name<
-        T: Copy + PartialEq + Debug
+        T: core::marker::Copy 
+        + core::cmp::PartialEq
+        + core::fmt::Debug
         + core::ops::Add<Output = T>
         + core::ops::Mul<Output = T>
         + core::ops::Sub<Output = T>
@@ -53,20 +58,24 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
         #def_token
     }
     impl<
-    T: Copy + PartialEq + Debug
+    T: core::marker::Copy 
+    + core::cmp::PartialEq
+    + core::fmt::Debug
     + core::ops::Add<Output = T>
     + core::ops::Mul<Output = T>
     + core::ops::Sub<Output = T>
     + core::ops::Div<Output = T>,
     > #name<T> {
-        pub fn new(#def_token) -> Self {
+        pub fn new(#fn_param_token) -> Self {
             #name {
                 #new_token
             }
         }
     }
     impl<
-    T: Copy + PartialEq + Debug
+    T: core::marker::Copy 
+    + core::cmp::PartialEq
+    + core::fmt::Debug
     + core::ops::Add<Output = T>
     + core::ops::Mul<Output = T>
     + core::ops::Sub<Output = T>
@@ -80,7 +89,9 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
         }
     }
     impl<
-    T: Copy + PartialEq + Debug
+    T: core::marker::Copy 
+    + core::cmp::PartialEq
+    + core::fmt::Debug
     + core::ops::Add<Output = T>
     + core::ops::Mul<Output = T>
     + core::ops::Sub<Output = T>
@@ -94,12 +105,14 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
         }
     }
     impl<
-    T: Copy + PartialEq + Debug
+    T: core::marker::Copy 
+    + core::cmp::PartialEq
+    + core::fmt::Debug
     + core::ops::Add<Output = T>
     + core::ops::Mul<Output = T>
     + core::ops::Sub<Output = T>
     + core::ops::Div<Output = T>,
-    >  core::ops::Mul for #name<T> {
+    > core::ops::Mul for #name<T> {
         type Output = Self;
         fn mul(self, rhs: Self) -> Self::Output {
             #name {
@@ -107,13 +120,15 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
             }
         }
     }
-    impl <
-    T: Copy + PartialEq + Debug
+    impl<
+    T: core::marker::Copy 
+    + core::cmp::PartialEq
+    + core::fmt::Debug
     + core::ops::Add<Output = T>
     + core::ops::Mul<Output = T>
     + core::ops::Sub<Output = T>
     + core::ops::Div<Output = T>,
-    >  core::fmt::Display for #name<T> {
+    > core::fmt::Display for #name<T> {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             f.write_str(&format!(#format_placeholder, #format_token))
         }

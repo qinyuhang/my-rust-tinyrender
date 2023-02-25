@@ -1,4 +1,5 @@
 mod test {
+    #![allow(unused_imports)]
     use crate::math::Vec2i;
     use crate::render::line::line;
     use crate::render::triangle::triangle;
