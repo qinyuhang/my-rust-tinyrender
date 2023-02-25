@@ -22,6 +22,7 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut add_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
     let mut sub_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
     let mut mul_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
+    let mut format_placeholder = format!("< {} ", name_str);
     let mut format_token: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
     args.clone().into_iter().for_each(|item| {
         let m = item.to_string();
@@ -32,11 +33,14 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
             add_token.extend(quote!( #m: self.#m + rhs.#m, ));
             sub_token.extend(quote!( #m: self.#m - rhs.#m, ));
             mul_token.extend(quote!( #m: self.#m * rhs.#m, ));
-            format_token.extend(quote!( #m: {:?} ));
+            format_token.extend(quote!( self.#m, ));
+            format_placeholder.push_str(&(m.to_string() + ":{:?}, "));
         }
     });
 
-    println!("z: {:?}", def_token.to_string());
+    format_placeholder.push_str(">");
+
+    println!("z: {:?} {}", format_token.to_string(), format_placeholder);
 
     TokenStream::from(quote!(
     pub struct #name<
@@ -111,8 +115,7 @@ pub fn make_vec(args: TokenStream, input: TokenStream) -> TokenStream {
     + core::ops::Div<Output = T>,
     >  core::fmt::Display for #name<T> {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            let z = 1;
-            f.write_str(&format!("< {} x: {} >", #name_str, z))
+            f.write_str(&format!(#format_placeholder, #format_token))
         }
     }
     ))
