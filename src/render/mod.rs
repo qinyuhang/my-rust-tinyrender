@@ -7,6 +7,8 @@ use line::line;
 use std::fs::OpenOptions;
 use wavefront::Obj;
 
+mod test;
+
 pub fn do_render() {
     let f = Obj::from_file("./obj/african_head.obj").unwrap();
     let width = 800;
